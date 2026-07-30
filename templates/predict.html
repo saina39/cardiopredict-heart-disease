@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}Predict &mdash; CardioPredict{% endblock %}
+
+{% block content %}
+<section class="form-section reveal">
+  <div class="form-header">
+    <p class="eyebrow">Patient assessment</p>
+    <h1>Enter clinical values</h1>
+    <p class="hero-sub">All 13 fields are required. Values reflect standard cardiac workup measurements.</p>
+  </div>
+
+  {% if errors %}
+  <div class="alert alert-error" role="alert">
+    <strong>Please fix the following:</strong>
+    <ul>
+      {% for err in errors %}<li>{{ err }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <form method="POST" action="{{ url_for('predict_page') }}" class="glass-card predict-form" id="predict-form" novalidate>
+
+    <fieldset>
+      <legend>Demographics</legend>
+      <div class="field-grid">
+        <div class="field">
+          <label for="age">Age (years)</label>
+          <input type="number" id="age" name="age" min="1" max="120" step="1"
+                 value="{{ form_data.age|default('') }}" required>
+        </div>
+        <div class="field">
+          <label for="sex">Sex</label>
+          <select id="sex" name="sex" required>
+            <option value="" disabled {% if not form_data.sex %}selected{% endif %}>Select&hellip;</option>
+            <option value="1" {% if form_data.sex == '1' %}selected{% endif %}>Male</option>
+            <option value="0" {% if form_data.sex == '0' %}selected{% endif %}>Female</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Vitals</legend>
+      <div class="field-grid">
+        <div class="field">
+          <label for="trestbps">Resting blood pressure <span class="unit">mm Hg</span></label>
+          <input type="number" id="trestbps" name="trestbps" min="60" max="250"
+                 value="{{ form_data.trestbps|default('') }}" required>
+        </div>
+        <div class="field">
+          <label for="chol">Serum cholesterol <span class="unit">mg/dl</span></label>
+          <input type="number" id="chol" name="chol" min="100" max="700"
+                 value="{{ form_data.chol|default('') }}" required>
+        </div>
+        <div class="field">
+          <label for="thalach">Max heart rate achieved <span class="unit">bpm</span></label>
+          <input type="number" id="thalach" name="thalach" min="60" max="250"
+                 value="{{ form_data.thalach|default('') }}" required>
+        </div>
+        <div class="field">
+          <label for="fbs">Fasting blood sugar &gt; 120 mg/dl</label>
+          <select id="fbs" name="fbs" required>
+            <option value="" disabled {% if not form_data.fbs %}selected{% endif %}>Select&hellip;</option>
+            <option value="1" {% if form_data.fbs == '1' %}selected{% endif %}>Yes</option>
+            <option value="0" {% if form_data.fbs == '0' %}selected{% endif %}>No</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Symptoms &amp; exercise response</legend>
+      <div class="field-grid">
+        <div class="field">
+          <label for="cp">Chest pain type</label>
+          <select id="cp" name="cp" required>
+            <option value="" disabled {% if not form_data.cp %}selected{% endif %}>Select&hellip;</option>
+            <option value="0" {% if form_data.cp == '0' %}selected{% endif %}>Typical angina</option>
+            <option value="1" {% if form_data.cp == '1' %}selected{% endif %}>Atypical angina</option>
+            <option value="2" {% if form_data.cp == '2' %}selected{% endif %}>Non-anginal pain</option>
+            <option value="3" {% if form_data.cp == '3' %}selected{% endif %}>Asymptomatic</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="exang">Exercise-induced angina</label>
+          <select id="exang" name="exang" required>
+            <option value="" disabled {% if not form_data.exang %}selected{% endif %}>Select&hellip;</option>
+            <option value="1" {% if form_data.exang == '1' %}selected{% endif %}>Yes</option>
+            <option value="0" {% if form_data.exang == '0' %}selected{% endif %}>No</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="oldpeak">ST depression (oldpeak)</label>
+          <input type="number" id="oldpeak" name="oldpeak" min="0" max="10" step="0.1"
+                 value="{{ form_data.oldpeak|default('') }}" required>
+        </div>
+        <div class="field">
+          <label for="slope">Slope of peak exercise ST segment</label>
+          <select id="slope" name="slope" required>
+            <option value="" disabled {% if not form_data.slope %}selected{% endif %}>Select&hellip;</option>
+            <option value="0" {% if form_data.slope == '0' %}selected{% endif %}>Upsloping</option>
+            <option value="1" {% if form_data.slope == '1' %}selected{% endif %}>Flat</option>
+            <option value="2" {% if form_data.slope == '2' %}selected{% endif %}>Downsloping</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Test results</legend>
+      <div class="field-grid">
+        <div class="field">
+          <label for="restecg">Resting ECG results</label>
+          <select id="restecg" name="restecg" required>
+            <option value="" disabled {% if not form_data.restecg %}selected{% endif %}>Select&hellip;</option>
+            <option value="0" {% if form_data.restecg == '0' %}selected{% endif %}>Normal</option>
+            <option value="1" {% if form_data.restecg == '1' %}selected{% endif %}>ST-T wave abnormality</option>
+            <option value="2" {% if form_data.restecg == '2' %}selected{% endif %}>Left ventricular hypertrophy</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="ca">Major vessels colored by fluoroscopy</label>
+          <select id="ca" name="ca" required>
+            <option value="" disabled {% if not form_data.ca %}selected{% endif %}>Select&hellip;</option>
+            <option value="0" {% if form_data.ca == '0' %}selected{% endif %}>0</option>
+            <option value="1" {% if form_data.ca == '1' %}selected{% endif %}>1</option>
+            <option value="2" {% if form_data.ca == '2' %}selected{% endif %}>2</option>
+            <option value="3" {% if form_data.ca == '3' %}selected{% endif %}>3</option>
+            <option value="4" {% if form_data.ca == '4' %}selected{% endif %}>4</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="thal">Thalassemia</label>
+          <select id="thal" name="thal" required>
+            <option value="" disabled {% if not form_data.thal %}selected{% endif %}>Select&hellip;</option>
+            <option value="0" {% if form_data.thal == '0' %}selected{% endif %}>Normal</option>
+            <option value="1" {% if form_data.thal == '1' %}selected{% endif %}>Fixed defect</option>
+            <option value="2" {% if form_data.thal == '2' %}selected{% endif %}>Reversible defect</option>
+            <option value="3" {% if form_data.thal == '3' %}selected{% endif %}>Other</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <button type="submit" class="btn btn-primary btn-block pulse-cta">Analyze risk</button>
+  </form>
+</section>
+{% endblock %}

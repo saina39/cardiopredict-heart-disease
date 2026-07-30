@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}CardioPredict &mdash; Heart Disease Risk Prediction{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-text reveal">
+    <p class="eyebrow">Machine learning &middot; cardiology</p>
+    <h1>Read the signal before it becomes a symptom.</h1>
+    <p class="hero-sub">
+      CardioPredict analyzes 13 clinical markers &mdash; blood pressure, cholesterol,
+      max heart rate, and more &mdash; to estimate heart disease risk in seconds,
+      using a model trained and benchmarked across four algorithms.
+    </p>
+    <div class="hero-actions">
+      <a href="{{ url_for('predict_page') }}" class="btn btn-primary pulse-cta">Check a patient &rarr;</a>
+      <a href="{{ url_for('about') }}" class="btn btn-ghost">View model accuracy</a>
+    </div>
+  </div>
+
+  <div class="hero-ecg reveal" style="--delay: .15s">
+    <svg viewBox="0 0 600 180" class="ecg-svg" preserveAspectRatio="none" aria-hidden="true">
+      <line x1="0" y1="90" x2="600" y2="90" class="ecg-baseline"/>
+      <polyline
+        class="ecg-line"
+        fill="none"
+        points="0,90 60,90 85,90 100,40 115,150 130,20 145,90 170,90 230,90 255,90 270,60 285,120 300,90 360,90 420,90 445,90 460,40 475,150 490,20 505,90 530,90 600,90"
+      />
+    </svg>
+  </div>
+</section>
+
+<section class="how-it-works reveal">
+  <h2>How a prediction is made</h2>
+  <div class="steps">
+    <div class="step">
+      <span class="step-num">01</span>
+      <h3>Enter vitals</h3>
+      <p>Fill in 13 standard clinical fields &mdash; the same measurements taken during a routine cardiac workup.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">02</span>
+      <h3>Model analyzes</h3>
+      <p>Inputs are scaled and passed through the best-performing trained classifier, selected after comparing four algorithms.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">03</span>
+      <h3>Get a risk read</h3>
+      <p>Receive a clear risk percentage and classification, instantly, with no data stored server-side.</p>
+    </div>
+  </div>
+</section>
+
+{% if model_info %}
+<section class="stats-strip reveal">
+  <div class="stat">
+    <span class="stat-value">{{ (model_info.metrics.accuracy * 100) | round(1) }}%</span>
+    <span class="stat-label">Model accuracy</span>
+  </div>
+  <div class="stat">
+    <span class="stat-value">{{ model_info.metrics.roc_auc }}</span>
+    <span class="stat-label">ROC-AUC score</span>
+  </div>
+  <div class="stat">
+    <span class="stat-value">{{ model_info.best_model }}</span>
+    <span class="stat-label">Selected model</span>
+  </div>
+  <div class="stat">
+    <span class="stat-value">13</span>
+    <span class="stat-label">Clinical features</span>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

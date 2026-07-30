@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Error {{ code }} &mdash; CardioPredict{% endblock %}
+
+{% block content %}
+<section class="error-section reveal">
+  <div class="glass-card error-card">
+    <p class="eyebrow">Error {{ code }}</p>
+    <h1>{{ message }}</h1>
+    <a href="{{ url_for('home') }}" class="btn btn-primary">Back to home</a>
+  </div>
+</section>
+{% endblock %}

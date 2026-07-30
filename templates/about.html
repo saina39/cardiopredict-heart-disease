@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Model Info &mdash; CardioPredict{% endblock %}
+
+{% block content %}
+<section class="about-section reveal">
+  <p class="eyebrow">Under the hood</p>
+  <h1>Model performance</h1>
+  <p class="hero-sub">Four algorithms were trained on the UCI Heart Disease dataset (303 patients, 13 features) and compared on a held-out 20% test split.</p>
+
+  {% if model_info %}
+  <div class="glass-card">
+    <p class="selected-model">Selected model: <strong>{{ model_info.best_model }}</strong></p>
+    <div class="table-wrap">
+      <table class="metrics-table">
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Accuracy</th>
+            <th>Precision</th>
+            <th>Recall</th>
+            <th>F1 Score</th>
+            <th>ROC-AUC</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for name, m in model_info.all_results.items() %}
+          <tr {% if name == model_info.best_model %}class="best-row"{% endif %}>
+            <td>{{ name }}{% if name == model_info.best_model %} &#9733;{% endif %}</td>
+            <td>{{ (m.accuracy * 100) | round(1) }}%</td>
+            <td>{{ (m.precision * 100) | round(1) }}%</td>
+            <td>{{ (m.recall * 100) | round(1) }}%</td>
+            <td>{{ (m.f1_score * 100) | round(1) }}%</td>
+            <td>{{ m.roc_auc }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="image-grid">
+    <figure class="glass-card">
+      <img src="{{ url_for('static', filename='images/model_comparison.png') }}" alt="Bar chart comparing model accuracy">
+      <figcaption>Accuracy comparison across models</figcaption>
+    </figure>
+    <figure class="glass-card">
+      <img src="{{ url_for('static', filename='images/confusion_matrix.png') }}" alt="Confusion matrix of the best model">
+      <figcaption>Confusion matrix &mdash; {{ model_info.best_model }}</figcaption>
+    </figure>
+    <figure class="glass-card">
+      <img src="{{ url_for('static', filename='images/correlation_heatmap.png') }}" alt="Feature correlation heatmap">
+      <figcaption>Feature correlation heatmap</figcaption>
+    </figure>
+    <figure class="glass-card">
+      <img src="{{ url_for('static', filename='images/target_distribution.png') }}" alt="Class distribution chart">
+      <figcaption>Target class distribution</figcaption>
+    </figure>
+    <figure class="glass-card">
+      <img src="{{ url_for('static', filename='images/age_distribution.png') }}" alt="Age distribution by disease status">
+      <figcaption>Age distribution by disease status</figcaption>
+    </figure>
+    <figure class="glass-card">
+      <img src="{{ url_for('static', filename='images/cp_vs_target.png') }}" alt="Chest pain type versus heart disease">
+      <figcaption>Chest pain type vs. heart disease</figcaption>
+    </figure>
+  </div>
+  {% else %}
+  <div class="alert alert-warning">
+    No model info found yet. Run <code>python train.py</code> to train the model and generate these charts.
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
